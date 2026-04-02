@@ -19139,8 +19139,8 @@ Tabs.displayName = "Tabs";
 //#endregion
 //#region \0vite/preload-helper.js
 var scriptRel = "modulepreload";
-var assetsURL = function(dep) {
-	return "/" + dep;
+var assetsURL = function(dep, importerUrl) {
+	return new URL(dep, importerUrl).href;
 };
 var seen = {};
 var __vitePreload = function preload(baseModule, deps, importerUrl) {
@@ -20341,7 +20341,7 @@ function singleFetchUrl(reqUrl, basename, trailingSlashAware, extension) {
 async function loadRouteModule(route, routeModulesCache) {
 	if (route.id in routeModulesCache) return routeModulesCache[route.id];
 	try {
-		let routeModule = await __vitePreload(() => import(route.module), []);
+		let routeModule = await __vitePreload(() => import(route.module), [], import.meta.url);
 		routeModulesCache[route.id] = routeModule;
 		return routeModule;
 	} catch (error) {
