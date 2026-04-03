@@ -25844,7 +25844,35 @@ var PageImage = () => {
 			})];
 		});
 	};
-	const C = ({ image_data }) => {
+	const reset = async (img_stack, img_data) => {
+		console.log(img_stack);
+		set_image_data_stacks((prev_0) => {
+			return [...prev_0.map((is) => {
+				if (is === img_stack) return {
+					...img_stack,
+					image_data: is.image_data.map((id) => {
+						if (id === img_data) {
+							URL.revokeObjectURL(is.modified_image_url);
+							return {
+								...id,
+								modified_image_url: null
+							};
+						}
+						return id;
+					})
+				};
+				return is;
+			})];
+		});
+		const ori_0 = await getByID(0);
+		if (!ori_0 || ori_0[img_data.name] == null) return;
+		delete ori_0[img_data.name];
+		update({
+			...ori_0,
+			id: 0
+		});
+	};
+	const C = ({ img_stack: img_stack_0, image_data }) => {
 		return (0, import_jsx_runtime.jsxs)("div", {
 			className: "w-min",
 			style: { marginBottom: "4rem" },
@@ -25868,35 +25896,51 @@ var PageImage = () => {
 				gap: 2,
 				direction: "horizontal",
 				className: "mb-3",
-				children: [(0, import_jsx_runtime.jsx)(Button, {
-					className: "",
-					children: "Download"
-				}), (0, import_jsx_runtime.jsx)(Button, {
-					disabled: !image_data.replaceable,
-					className: "",
-					onClick: () => {
-						dispatch({
-							type: "set_show_input_file",
-							payload: {
-								show: true,
-								image_name: image_data.name,
-								url: image_data.image_url,
-								modify_image,
-								max_size: 1024 * 300
-							}
-						});
-					},
-					children: "Replace"
-				})]
+				children: [
+					(0, import_jsx_runtime.jsx)(Button, {
+						className: "",
+						onClick: () => {
+							(0, import_FileSaver_min.saveAs)(image_data.modified_image_url ?? image_data.image_url, image_data.image_name);
+						},
+						children: "Download"
+					}),
+					(0, import_jsx_runtime.jsx)(Button, {
+						disabled: !image_data.replaceable,
+						className: "",
+						onClick: () => {
+							dispatch({
+								type: "set_show_input_file",
+								payload: {
+									show: true,
+									image_name: image_data.name,
+									url: image_data.image_url,
+									modify_image,
+									max_size: 1024 * 300
+								}
+							});
+						},
+						children: "Replace"
+					}),
+					image_data.modified_image_url && (0, import_jsx_runtime.jsx)(Button, {
+						className: "",
+						onClick: () => {
+							reset(img_stack_0, image_data);
+						},
+						children: "Reset"
+					})
+				]
 			})]
 		});
 	};
-	const SliderView = ({ image_data: image_data_0 }) => {
+	const SliderView = ({ image_data: image_data_0, img_stack: img_stack_1 }) => {
 		return (0, import_jsx_runtime.jsx)("div", {
 			className: "w-100 slider-container",
 			children: (0, import_jsx_runtime.jsx)(SliderComponent, {
 				...settings,
-				children: image_data_0.map((image_data_1, i_1) => (0, import_jsx_runtime.jsx)(C, { image_data: image_data_1 }, i_1))
+				children: image_data_0.map((image_data_1, i_1) => (0, import_jsx_runtime.jsx)(C, {
+					img_stack: img_stack_1,
+					image_data: image_data_1
+				}, i_1))
 			})
 		});
 	};
@@ -25904,14 +25948,17 @@ var PageImage = () => {
 		className: "overflow-hidden py-4 mb-4",
 		children: (0, import_jsx_runtime.jsx)(Stack, {
 			gap: 2,
-			children: image_data_stacks.map((img_stack, index) => (0, import_jsx_runtime.jsxs)(Accordion_default, {
+			children: image_data_stacks.map((img_stack_2, index) => (0, import_jsx_runtime.jsxs)(Accordion_default, {
 				className: "border",
 				children: [(0, import_jsx_runtime.jsx)(Accordion_default.Header, {
 					className: "text-light fw-bold",
-					children: img_stack.title
+					children: img_stack_2.title
 				}), (0, import_jsx_runtime.jsx)(Accordion_default.Body, {
 					className: "",
-					children: (0, import_jsx_runtime.jsx)(SliderView, { image_data: img_stack.image_data })
+					children: (0, import_jsx_runtime.jsx)(SliderView, {
+						img_stack: img_stack_2,
+						image_data: img_stack_2.image_data
+					})
 				})]
 			}, index))
 		})
@@ -26912,6 +26959,9 @@ function DisplayAnimationImage_default(props) {
 				}),
 				(0, import_jsx_runtime.jsx)(Button, {
 					variant: "primary",
+					onClick: () => {
+						saveAs(src, Object.keys(gameData.current_team.images).find((k) => gameData.current_team.images[k] == src));
+					},
 					children: "Download"
 				})
 			]
@@ -26943,7 +26993,7 @@ function DisplayAnimationImage_default(props) {
 //#endregion
 //#region src/component/DisplayImage.jsx
 function DisplayImage(props) {
-	const $ = (0, import_compiler_runtime.c)(33);
+	const $ = (0, import_compiler_runtime.c)(36);
 	const { src, alt, offset: t0, length: t1, edit: t2, replace: t3, reset_image, className: t4 } = props;
 	const offset = t0 === void 0 ? 0 : t0;
 	const length = t1 === void 0 ? 0 : t1;
@@ -26955,7 +27005,7 @@ function DisplayImage(props) {
 	const [show, set_show] = (0, import_react.useState)(false);
 	const [target, set_target] = (0, import_react.useState)(null);
 	let t5;
-	if ($[0] !== dispatch || $[1] !== edit || $[2] !== gameData || $[3] !== length || $[4] !== offset || $[5] !== src) {
+	if ($[0] !== dispatch || $[1] !== edit || $[2] !== gameData.current_team.images || $[3] !== length || $[4] !== offset || $[5] !== src) {
 		t5 = edit && (0, import_jsx_runtime.jsx)(Button, {
 			variant: "primary",
 			onClick: () => {
@@ -26974,14 +27024,14 @@ function DisplayImage(props) {
 		});
 		$[0] = dispatch;
 		$[1] = edit;
-		$[2] = gameData;
+		$[2] = gameData.current_team.images;
 		$[3] = length;
 		$[4] = offset;
 		$[5] = src;
 		$[6] = t5;
 	} else t5 = $[6];
 	let t6;
-	if ($[7] !== dispatch || $[8] !== gameData || $[9] !== replace || $[10] !== src) {
+	if ($[7] !== dispatch || $[8] !== gameData.current_team.images || $[9] !== replace || $[10] !== src) {
 		t6 = replace && (0, import_jsx_runtime.jsx)(Button, {
 			variant: "primary",
 			onClick: () => {
@@ -26998,7 +27048,7 @@ function DisplayImage(props) {
 			children: "Replace"
 		});
 		$[7] = dispatch;
-		$[8] = gameData;
+		$[8] = gameData.current_team.images;
 		$[9] = replace;
 		$[10] = src;
 		$[11] = t6;
@@ -27014,15 +27064,20 @@ function DisplayImage(props) {
 		$[13] = t7;
 	} else t7 = $[13];
 	let t8;
-	if ($[14] === Symbol.for("react.memo_cache_sentinel")) {
+	if ($[14] !== gameData.current_team.images || $[15] !== src) {
 		t8 = (0, import_jsx_runtime.jsx)(Button, {
 			variant: "primary",
+			onClick: () => {
+				(0, import_FileSaver_min.saveAs)(src, Object.keys(gameData.current_team.images).find((k_1) => gameData.current_team.images[k_1] == src));
+			},
 			children: "Download"
 		});
-		$[14] = t8;
-	} else t8 = $[14];
+		$[14] = gameData.current_team.images;
+		$[15] = src;
+		$[16] = t8;
+	} else t8 = $[16];
 	let t9;
-	if ($[15] !== t5 || $[16] !== t6 || $[17] !== t7) {
+	if ($[17] !== t5 || $[18] !== t6 || $[19] !== t7 || $[20] !== t8) {
 		t9 = (0, import_jsx_runtime.jsx)(Popover_default, { children: (0, import_jsx_runtime.jsx)(Popover_default.Body, { children: (0, import_jsx_runtime.jsxs)(Stack, {
 			gap: 2,
 			children: [
@@ -27032,57 +27087,58 @@ function DisplayImage(props) {
 				t8
 			]
 		}) }) });
-		$[15] = t5;
-		$[16] = t6;
-		$[17] = t7;
-		$[18] = t9;
-	} else t9 = $[18];
+		$[17] = t5;
+		$[18] = t6;
+		$[19] = t7;
+		$[20] = t8;
+		$[21] = t9;
+	} else t9 = $[21];
 	let t10;
-	if ($[19] !== show || $[20] !== t9 || $[21] !== target) {
+	if ($[22] !== show || $[23] !== t9 || $[24] !== target) {
 		t10 = (0, import_jsx_runtime.jsx)(Overlay, {
 			show,
 			target,
 			placement: "right",
 			children: t9
 		});
-		$[19] = show;
-		$[20] = t9;
-		$[21] = target;
-		$[22] = t10;
-	} else t10 = $[22];
+		$[22] = show;
+		$[23] = t9;
+		$[24] = target;
+		$[25] = t10;
+	} else t10 = $[25];
 	const popover = t10;
 	let t11;
-	if ($[23] !== show) {
+	if ($[26] !== show) {
 		t11 = (e) => {
 			set_show(!show);
 			set_target(e.target);
 		};
-		$[23] = show;
-		$[24] = t11;
-	} else t11 = $[24];
+		$[26] = show;
+		$[27] = t11;
+	} else t11 = $[27];
 	let t12;
-	if ($[25] !== alt || $[26] !== src || $[27] !== t11) {
+	if ($[28] !== alt || $[29] !== src || $[30] !== t11) {
 		t12 = (0, import_jsx_runtime.jsx)(Image$1, {
 			src,
 			alt,
 			onClick: t11
 		});
-		$[25] = alt;
-		$[26] = src;
-		$[27] = t11;
-		$[28] = t12;
-	} else t12 = $[28];
+		$[28] = alt;
+		$[29] = src;
+		$[30] = t11;
+		$[31] = t12;
+	} else t12 = $[31];
 	let t13;
-	if ($[29] !== className || $[30] !== popover || $[31] !== t12) {
+	if ($[32] !== className || $[33] !== popover || $[34] !== t12) {
 		t13 = (0, import_jsx_runtime.jsxs)("div", {
 			className,
 			children: [t12, popover]
 		});
-		$[29] = className;
-		$[30] = popover;
-		$[31] = t12;
-		$[32] = t13;
-	} else t13 = $[32];
+		$[32] = className;
+		$[33] = popover;
+		$[34] = t12;
+		$[35] = t13;
+	} else t13 = $[35];
 	return t13;
 }
 
@@ -33869,9 +33925,37 @@ function ReorderTeamGroup_default() {
 }
 
 //#endregion
+//#region src/component/NavTop.jsx
+function NavTop_default({ set_show }) {
+	const navigate = useNavigate();
+	return (0, import_jsx_runtime.jsx)(Navbar_default, {
+		className: "bg-primary",
+		expand: "lg",
+		children: (0, import_jsx_runtime.jsxs)(Container, { children: [(0, import_jsx_runtime.jsxs)(Navbar_default.Brand, {
+			className: "text-white bold",
+			children: [(0, import_jsx_runtime.jsx)(Button, {
+				onClick: () => {
+					navigate("/");
+				},
+				className: "mr-5 px-3",
+				variant: "outline-light",
+				children: (0, import_jsx_runtime.jsx)("i", { className: "bi bi-arrow-left" })
+			}), (0, import_jsx_runtime.jsx)("span", {
+				className: "fw-bold mx-2",
+				children: "Pes Java Editor"
+			})]
+		}), (0, import_jsx_runtime.jsx)(Navbar_default.Toggle, {
+			onClick: () => set_show(true),
+			className: "text-dark bg-white",
+			"aria-controls": "basic-navbar-nav"
+		})] })
+	});
+}
+
+//#endregion
 //#region src/App.jsx
 function App() {
-	const $ = (0, import_compiler_runtime.c)(61);
+	const $ = (0, import_compiler_runtime.c)(60);
 	const { getByID, deleteAll } = useIndexedDBStore(STORE_NAME_IMAGES);
 	const idb_data = useIndexedDBStore(STORE_NAME);
 	const { loaded_zip, modified, show_input_file, file_names } = (0, import_react.useContext)(EditorContext);
@@ -34035,98 +34119,74 @@ function App() {
 	} else t5 = $[18];
 	let t6;
 	if ($[19] === Symbol.for("react.memo_cache_sentinel")) {
-		t6 = (0, import_jsx_runtime.jsxs)(Navbar_default.Brand, {
-			className: "text-white bold",
-			children: [(0, import_jsx_runtime.jsx)(Button, {
-				href: "/",
-				className: "mr-5 px-3",
-				variant: "outline-light",
-				children: (0, import_jsx_runtime.jsx)("i", { className: "bi bi-arrow-left" })
-			}), (0, import_jsx_runtime.jsx)("span", {
-				className: "fw-bold mx-2",
-				children: "Pes Java Editor"
-			})]
-		});
+		t6 = (0, import_jsx_runtime.jsx)(NavTop_default, { set_show });
 		$[19] = t6;
 	} else t6 = $[19];
 	let t7;
 	if ($[20] === Symbol.for("react.memo_cache_sentinel")) {
-		t7 = (0, import_jsx_runtime.jsx)(Navbar_default, {
-			className: "bg-primary",
-			expand: "lg",
-			children: (0, import_jsx_runtime.jsxs)(Container, { children: [t6, (0, import_jsx_runtime.jsx)(Navbar_default.Toggle, {
-				onClick: () => set_show(true),
-				className: "text-dark bg-white",
-				"aria-controls": "basic-navbar-nav"
-			})] })
+		t7 = (0, import_jsx_runtime.jsx)(Route, {
+			index: true,
+			path: "/",
+			element: (0, import_jsx_runtime.jsx)(Home_default, {})
 		});
 		$[20] = t7;
 	} else t7 = $[20];
 	let t8;
 	if ($[21] === Symbol.for("react.memo_cache_sentinel")) {
 		t8 = (0, import_jsx_runtime.jsx)(Route, {
-			index: true,
-			path: "/",
-			element: (0, import_jsx_runtime.jsx)(Home_default, {})
+			path: "/TeamEditor",
+			element: (0, import_jsx_runtime.jsx)(TeamEditor, {})
 		});
 		$[21] = t8;
 	} else t8 = $[21];
 	let t9;
 	if ($[22] === Symbol.for("react.memo_cache_sentinel")) {
 		t9 = (0, import_jsx_runtime.jsx)(Route, {
-			path: "/TeamEditor",
-			element: (0, import_jsx_runtime.jsx)(TeamEditor, {})
+			path: "/StringEditor",
+			element: (0, import_jsx_runtime.jsx)(StringEditor_default, {})
 		});
 		$[22] = t9;
 	} else t9 = $[22];
 	let t10;
 	if ($[23] === Symbol.for("react.memo_cache_sentinel")) {
 		t10 = (0, import_jsx_runtime.jsx)(Route, {
-			path: "/StringEditor",
-			element: (0, import_jsx_runtime.jsx)(StringEditor_default, {})
+			path: "/Images",
+			element: (0, import_jsx_runtime.jsx)(PageImage, {})
 		});
 		$[23] = t10;
 	} else t10 = $[23];
 	let t11;
 	if ($[24] === Symbol.for("react.memo_cache_sentinel")) {
 		t11 = (0, import_jsx_runtime.jsx)(Route, {
-			path: "/Images",
-			element: (0, import_jsx_runtime.jsx)(PageImage, {})
+			index: true,
+			element: (0, import_jsx_runtime.jsx)(ReorderTeamGroupSelector, {})
 		});
 		$[24] = t11;
 	} else t11 = $[24];
 	let t12;
 	if ($[25] === Symbol.for("react.memo_cache_sentinel")) {
-		t12 = (0, import_jsx_runtime.jsx)(Route, {
-			index: true,
-			element: (0, import_jsx_runtime.jsx)(ReorderTeamGroupSelector, {})
-		});
-		$[25] = t12;
-	} else t12 = $[25];
-	let t13;
-	if ($[26] === Symbol.for("react.memo_cache_sentinel")) {
-		t13 = (0, import_jsx_runtime.jsx)(Container, {
+		t12 = (0, import_jsx_runtime.jsxs)(HashRouter, { children: [t6, (0, import_jsx_runtime.jsx)(Container, {
 			className: "h-100 overflow-y-scroll",
 			fluid: true,
-			children: (0, import_jsx_runtime.jsx)(HashRouter, { children: (0, import_jsx_runtime.jsxs)(Routes, { children: [
+			children: (0, import_jsx_runtime.jsxs)(Routes, { children: [
+				t7,
 				t8,
 				t9,
 				t10,
-				t11,
 				(0, import_jsx_runtime.jsxs)(Route, {
 					path: "/ReorderTeamGroup",
-					children: [t12, (0, import_jsx_runtime.jsx)(Route, {
+					children: [t11, (0, import_jsx_runtime.jsx)(Route, {
 						path: ":group",
 						element: (0, import_jsx_runtime.jsx)(ReorderTeamGroup_default, {})
 					})]
 				})
-			] }) })
-		});
-		$[26] = t13;
-	} else t13 = $[26];
-	let t14;
-	if ($[27] !== do_save_jar || $[28] !== show) {
-		t14 = show && (0, import_jsx_runtime.jsx)(Offcanvas_default, {
+			] })
+		})] });
+		$[25] = t12;
+	} else t12 = $[25];
+	let t13;
+	if ($[26] !== do_save_jar || $[27] !== show) {
+		t13 = show && (0, import_jsx_runtime.jsx)(Offcanvas_default, {
 			show,
 			onHide: () => set_show(false),
 			placement: "bottom",
@@ -34151,57 +34211,57 @@ function App() {
 				]
 			}) })
 		});
-		$[27] = do_save_jar;
-		$[28] = show;
-		$[29] = t14;
-	} else t14 = $[29];
-	let t15;
-	if ($[30] === Symbol.for("react.memo_cache_sentinel")) {
-		t15 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
+		$[26] = do_save_jar;
+		$[27] = show;
+		$[28] = t13;
+	} else t13 = $[28];
+	let t14;
+	if ($[29] === Symbol.for("react.memo_cache_sentinel")) {
+		t14 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
 			className: "text-center",
 			children: "Building jar"
 		});
-		$[30] = t15;
-	} else t15 = $[30];
-	const t16 = `${Math.floor(progress_now * 100 / (file_names.length - 1))}%`;
-	const t17 = Math.floor(progress_now * 100 / (file_names.length - 1));
-	let t18;
-	if ($[31] !== t16 || $[32] !== t17) {
-		t18 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsx)(ProgressBar, {
+		$[29] = t14;
+	} else t14 = $[29];
+	const t15 = `${Math.floor(progress_now * 100 / (file_names.length - 1))}%`;
+	const t16 = Math.floor(progress_now * 100 / (file_names.length - 1));
+	let t17;
+	if ($[30] !== t15 || $[31] !== t16) {
+		t17 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsx)(ProgressBar, {
 			striped: true,
 			variant: "primary",
-			label: t16,
-			now: t17
+			label: t15,
+			now: t16
 		}) });
+		$[30] = t15;
 		$[31] = t16;
 		$[32] = t17;
-		$[33] = t18;
-	} else t18 = $[33];
-	let t19;
-	if ($[34] !== show_progress_dialog || $[35] !== t18) {
-		t19 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+	} else t17 = $[32];
+	let t18;
+	if ($[33] !== show_progress_dialog || $[34] !== t17) {
+		t18 = (0, import_jsx_runtime.jsxs)(Modal_default, {
 			centered: true,
 			show: show_progress_dialog,
-			children: [t15, t18]
+			children: [t14, t17]
 		});
-		$[34] = show_progress_dialog;
+		$[33] = show_progress_dialog;
+		$[34] = t17;
 		$[35] = t18;
-		$[36] = t19;
-	} else t19 = $[36];
+	} else t18 = $[35];
+	let t19;
+	if ($[36] !== show_input_file.show) {
+		t19 = show_input_file.show && (0, import_jsx_runtime.jsx)(ModalInputFile_default, {});
+		$[36] = show_input_file.show;
+		$[37] = t19;
+	} else t19 = $[37];
 	let t20;
-	if ($[37] !== show_input_file.show) {
-		t20 = show_input_file.show && (0, import_jsx_runtime.jsx)(ModalInputFile_default, {});
-		$[37] = show_input_file.show;
+	if ($[38] === Symbol.for("react.memo_cache_sentinel")) {
+		t20 = () => set_show_alert(false);
 		$[38] = t20;
 	} else t20 = $[38];
 	let t21;
 	if ($[39] === Symbol.for("react.memo_cache_sentinel")) {
-		t21 = () => set_show_alert(false);
-		$[39] = t21;
-	} else t21 = $[39];
-	let t22;
-	if ($[40] === Symbol.for("react.memo_cache_sentinel")) {
-		t22 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsxs)(Alert_default, {
+		t21 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsxs)(Alert_default, {
 			variant: "danger",
 			children: [
 				(0, import_jsx_runtime.jsx)(Alert_default.Heading, { children: "Confirm Reset" }),
@@ -34209,108 +34269,107 @@ function App() {
 				(0, import_jsx_runtime.jsx)("p", { children: "This will remove all modified data!" })
 			]
 		}) });
-		$[40] = t22;
-	} else t22 = $[40];
-	let t23;
-	if ($[41] !== reset_data) {
-		t23 = (0, import_jsx_runtime.jsx)(Button, {
+		$[39] = t21;
+	} else t21 = $[39];
+	let t22;
+	if ($[40] !== reset_data) {
+		t22 = (0, import_jsx_runtime.jsx)(Button, {
 			variant: "danger",
 			onClick: reset_data,
 			children: "Confirm"
 		});
-		$[41] = reset_data;
-		$[42] = t23;
-	} else t23 = $[42];
-	let t24;
-	if ($[43] === Symbol.for("react.memo_cache_sentinel")) {
-		t24 = (0, import_jsx_runtime.jsx)(Button, {
+		$[40] = reset_data;
+		$[41] = t22;
+	} else t22 = $[41];
+	let t23;
+	if ($[42] === Symbol.for("react.memo_cache_sentinel")) {
+		t23 = (0, import_jsx_runtime.jsx)(Button, {
 			onClick: () => set_show_alert(false),
 			children: "Cancel"
 		});
-		$[43] = t24;
-	} else t24 = $[43];
+		$[42] = t23;
+	} else t23 = $[42];
+	let t24;
+	if ($[43] !== t22) {
+		t24 = (0, import_jsx_runtime.jsxs)(Modal_default.Footer, { children: [t22, t23] });
+		$[43] = t22;
+		$[44] = t24;
+	} else t24 = $[44];
 	let t25;
-	if ($[44] !== t23) {
-		t25 = (0, import_jsx_runtime.jsxs)(Modal_default.Footer, { children: [t23, t24] });
-		$[44] = t23;
-		$[45] = t25;
-	} else t25 = $[45];
-	let t26;
-	if ($[46] !== show_alert || $[47] !== t25) {
-		t26 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+	if ($[45] !== show_alert || $[46] !== t24) {
+		t25 = (0, import_jsx_runtime.jsxs)(Modal_default, {
 			centered: true,
 			show: show_alert,
-			onHide: t21,
-			children: [t22, t25]
+			onHide: t20,
+			children: [t21, t24]
 		});
-		$[46] = show_alert;
+		$[45] = show_alert;
+		$[46] = t24;
 		$[47] = t25;
-		$[48] = t26;
-	} else t26 = $[48];
+	} else t25 = $[47];
+	let t26;
 	let t27;
-	let t28;
-	if ($[49] === Symbol.for("react.memo_cache_sentinel")) {
-		t27 = () => set_show_about(false);
-		t28 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
+	if ($[48] === Symbol.for("react.memo_cache_sentinel")) {
+		t26 = () => set_show_about(false);
+		t27 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
 			className: "text-center",
 			children: "About"
 		});
+		$[48] = t26;
 		$[49] = t27;
-		$[50] = t28;
 	} else {
+		t26 = $[48];
 		t27 = $[49];
-		t28 = $[50];
 	}
+	let t28;
+	if ($[50] === Symbol.for("react.memo_cache_sentinel")) {
+		t28 = (0, import_jsx_runtime.jsxs)(Modal_default.Body, { children: [(0, import_jsx_runtime.jsx)("hr", {}), (0, import_jsx_runtime.jsx)("p", { children: "Tool to modify PES 2011 Java (J2ME) Teams, Players, Skills, Images (few currently) for 320x240 screen size." })] });
+		$[50] = t28;
+	} else t28 = $[50];
 	let t29;
 	if ($[51] === Symbol.for("react.memo_cache_sentinel")) {
-		t29 = (0, import_jsx_runtime.jsxs)(Modal_default.Body, { children: [(0, import_jsx_runtime.jsx)("hr", {}), (0, import_jsx_runtime.jsx)("p", { children: "Tool to modify PES 2011 Java (J2ME) Teams, Players, Skills, Images (few currently) for 320x240 screen size." })] });
-		$[51] = t29;
-	} else t29 = $[51];
-	let t30;
-	if ($[52] === Symbol.for("react.memo_cache_sentinel")) {
-		t30 = (0, import_jsx_runtime.jsx)(Modal_default.Footer, { children: (0, import_jsx_runtime.jsx)(Button, {
+		t29 = (0, import_jsx_runtime.jsx)(Modal_default.Footer, { children: (0, import_jsx_runtime.jsx)(Button, {
 			onClick: () => set_show_about(false),
 			children: "Close"
 		}) });
-		$[52] = t30;
-	} else t30 = $[52];
-	let t31;
-	if ($[53] !== show_about) {
-		t31 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+		$[51] = t29;
+	} else t29 = $[51];
+	let t30;
+	if ($[52] !== show_about) {
+		t30 = (0, import_jsx_runtime.jsxs)(Modal_default, {
 			centered: true,
 			show: show_about,
-			onHide: t27,
+			onHide: t26,
 			children: [
+				t27,
 				t28,
-				t29,
+				t29
+			]
+		});
+		$[52] = show_about;
+		$[53] = t30;
+	} else t30 = $[53];
+	let t31;
+	if ($[54] !== t13 || $[55] !== t18 || $[56] !== t19 || $[57] !== t25 || $[58] !== t30) {
+		t31 = (0, import_jsx_runtime.jsxs)("div", {
+			style: t5,
+			children: [
+				t12,
+				t13,
+				t18,
+				t19,
+				t25,
 				t30
 			]
 		});
-		$[53] = show_about;
-		$[54] = t31;
-	} else t31 = $[54];
-	let t32;
-	if ($[55] !== t14 || $[56] !== t19 || $[57] !== t20 || $[58] !== t26 || $[59] !== t31) {
-		t32 = (0, import_jsx_runtime.jsxs)("div", {
-			style: t5,
-			children: [
-				t7,
-				t13,
-				t14,
-				t19,
-				t20,
-				t26,
-				t31
-			]
-		});
-		$[55] = t14;
+		$[54] = t13;
+		$[55] = t18;
 		$[56] = t19;
-		$[57] = t20;
-		$[58] = t26;
+		$[57] = t25;
+		$[58] = t30;
 		$[59] = t31;
-		$[60] = t32;
-	} else t32 = $[60];
-	return t32;
+	} else t31 = $[59];
+	return t31;
 }
 
 //#endregion
