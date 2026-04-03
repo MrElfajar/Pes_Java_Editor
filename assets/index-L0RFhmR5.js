@@ -14151,6 +14151,20 @@ var divWithClassName_default = ((className) => import_react.forwardRef((p, ref) 
 })));
 
 //#endregion
+//#region node_modules/react-bootstrap/esm/AlertHeading.js
+var DivStyledAsH4$1 = divWithClassName_default("h4");
+DivStyledAsH4$1.displayName = "DivStyledAsH4";
+var AlertHeading = import_react.forwardRef(({ className, bsPrefix, as: Component = DivStyledAsH4$1, ...props }, ref) => {
+	bsPrefix = useBootstrapPrefix(bsPrefix, "alert-heading");
+	return (0, import_jsx_runtime.jsx)(Component, {
+		ref,
+		className: (0, import_classnames.default)(className, bsPrefix),
+		...props
+	});
+});
+AlertHeading.displayName = "AlertHeading";
+
+//#endregion
 //#region node_modules/@restart/ui/node_modules/@restart/hooks/esm/useCallbackRef.js
 function useCallbackRef$1() {
 	return (0, import_react.useState)(null);
@@ -14296,6 +14310,18 @@ var Anchor = import_react.forwardRef((_ref, ref) => {
 Anchor.displayName = "Anchor";
 
 //#endregion
+//#region node_modules/react-bootstrap/esm/AlertLink.js
+var AlertLink = import_react.forwardRef(({ className, bsPrefix, as: Component = Anchor, ...props }, ref) => {
+	bsPrefix = useBootstrapPrefix(bsPrefix, "alert-link");
+	return (0, import_jsx_runtime.jsx)(Component, {
+		ref,
+		className: (0, import_classnames.default)(className, bsPrefix),
+		...props
+	});
+});
+AlertLink.displayName = "AlertLink";
+
+//#endregion
 //#region node_modules/react-bootstrap/esm/Fade.js
 var fadeStyles = {
 	[ENTERING]: "show",
@@ -14345,6 +14371,41 @@ var CloseButton = import_react.forwardRef(({ className, variant, "aria-label": a
 }));
 CloseButton.displayName = "CloseButton";
 CloseButton.propTypes = propTypes$4;
+
+//#endregion
+//#region node_modules/react-bootstrap/esm/Alert.js
+var Alert = import_react.forwardRef((uncontrolledProps, ref) => {
+	const { bsPrefix, show = true, closeLabel = "Close alert", closeVariant, className, children, variant = "primary", onClose, dismissible, transition = Fade, ...props } = useUncontrolled(uncontrolledProps, { show: "onClose" });
+	const prefix = useBootstrapPrefix(bsPrefix, "alert");
+	const handleClose = useEventCallback$1((e) => {
+		if (onClose) onClose(false, e);
+	});
+	const Transition = transition === true ? Fade : transition;
+	const alert = (0, import_jsx_runtime.jsxs)("div", {
+		role: "alert",
+		...!Transition ? props : void 0,
+		ref,
+		className: (0, import_classnames.default)(className, prefix, variant && `${prefix}-${variant}`, dismissible && `${prefix}-dismissible`),
+		children: [dismissible && (0, import_jsx_runtime.jsx)(CloseButton, {
+			onClick: handleClose,
+			"aria-label": closeLabel,
+			variant: closeVariant
+		}), children]
+	});
+	if (!Transition) return show ? alert : null;
+	return (0, import_jsx_runtime.jsx)(Transition, {
+		unmountOnExit: true,
+		...props,
+		ref: void 0,
+		in: show,
+		children: alert
+	});
+});
+Alert.displayName = "Alert";
+var Alert_default = Object.assign(Alert, {
+	Link: AlertLink,
+	Heading: AlertHeading
+});
 
 //#endregion
 //#region node_modules/react-bootstrap/esm/Button.js
@@ -22308,6 +22369,10 @@ function editorReducer(state, { payload, type }) {
 				...state,
 				current_team: { ...payload }
 			};
+		case "clear_data": return {
+			...state,
+			modified: {}
+		};
 		case "set_images": return {
 			...state,
 			images: { ...payload }
@@ -28083,7 +28148,7 @@ function SkillChart_default({ skill, skill_names }) {
 		});
 	}, [points]);
 	return (0, import_jsx_runtime.jsx)("canvas", {
-		className: "w-100 h-100 bg-dark",
+		className: "w-100 h-100 bg-dark aspect-square",
 		ref: canvasRef
 	});
 }
@@ -28160,7 +28225,7 @@ function DisplayTeam() {
 			...ori_0,
 			id: current_team.index,
 			...payload
-		}).then((s_0) => console.log(s_0)).catch((e_0) => console.log(e_0));
+		});
 	};
 	const modify_player_skill = () => {
 		const ori_1 = modified[current_team.index] || {};
@@ -28185,7 +28250,7 @@ function DisplayTeam() {
 			...ori_1,
 			id: current_team.index,
 			players: str_players
-		}).then((s_1) => console.log(s_1)).catch((e_1) => console.log(e_1));
+		}).then((s_0) => console.log(s_0)).catch((e_0) => console.log(e_0));
 	};
 	const modify_player_name = (player_name) => {
 		const ori_2 = modified[current_team.index] || {};
@@ -28257,9 +28322,9 @@ function DisplayTeam() {
 	};
 	const update_skill = (index, value) => {
 		if (!current_team) return;
-		let s_2 = [...skill];
-		s_2[index] = value;
-		set_skill(s_2);
+		let s_1 = [...skill];
+		s_1[index] = value;
+		set_skill(s_1);
 	};
 	const reset_player_skill = () => {
 		set_gk_skill(current_team.players[selected_player].gk_skill);
@@ -28274,8 +28339,8 @@ function DisplayTeam() {
 		skill_0[player_skill_index - 1] = value_0;
 		set_player_skill(skill_0);
 	};
-	const p_skill = player_position === "GK" ? player_skill.map((s_3, i) => i == 2 ? gk_skill : s_3) : player_skill;
-	const s_names = player_position === "GK" ? skill_names.map((s_4, i_0) => i_0 === 2 ? "GK" : s_4) : skill_names;
+	const p_skill = player_position === "GK" ? player_skill.map((s_2, i) => i == 2 ? gk_skill : s_2) : player_skill;
+	const s_names = player_position === "GK" ? skill_names.map((s_3, i_0) => i_0 === 2 ? "GK" : s_3) : skill_names;
 	return (0, import_jsx_runtime.jsxs)("div", {
 		className: "px-1",
 		children: [(0, import_jsx_runtime.jsxs)(Row, { children: [(0, import_jsx_runtime.jsxs)(Col, { children: [(0, import_jsx_runtime.jsxs)(Card_default, { children: [(0, import_jsx_runtime.jsx)(Card_default.Title, {
@@ -28284,13 +28349,10 @@ function DisplayTeam() {
 				text: current_team.team_name_full,
 				onEdit: (team_name_full) => modify_team_name({ team_name_full })
 			})
-		}), (0, import_jsx_runtime.jsx)(Card_default.Body, {
-			style: { aspectRatio: "1/1" },
-			children: (0, import_jsx_runtime.jsx)(SkillChart_default, {
-				skill,
-				skill_names
-			})
-		})] }), (0, import_jsx_runtime.jsxs)(Container, {
+		}), (0, import_jsx_runtime.jsx)(Card_default.Body, { children: (0, import_jsx_runtime.jsx)(SkillChart_default, {
+			skill,
+			skill_names
+		}) })] }), (0, import_jsx_runtime.jsxs)(Container, {
 			className: "p-1",
 			children: [(0, import_jsx_runtime.jsxs)(Row, { children: [
 				(0, import_jsx_runtime.jsx)(Col, { children: (0, import_jsx_runtime.jsx)(DisplayImage, {
@@ -28353,12 +28415,12 @@ function DisplayTeam() {
 			})
 		}), (0, import_jsx_runtime.jsxs)(Card_default.Body, {
 			style: { aspectRatio: "1/1" },
-			children: [skill.map((s_5, i_1) => (0, import_jsx_runtime.jsxs)(Form_default.Group, { children: [(0, import_jsx_runtime.jsx)(FormLabel, { children: `${skill_names[i_1]} (${skill_names_long[i_1]})` }), (0, import_jsx_runtime.jsx)(FormRange, {
+			children: [skill.map((s_4, i_1) => (0, import_jsx_runtime.jsxs)(Form_default.Group, { children: [(0, import_jsx_runtime.jsx)(FormLabel, { children: `${skill_names[i_1]} (${skill_names_long[i_1]})` }), (0, import_jsx_runtime.jsx)(FormRange, {
 				max: 15,
 				min: 0,
-				value: s_5,
-				onChange: (e_2) => {
-					let v = e_2.target.valueAsNumber;
+				value: s_4,
+				onChange: (e_1) => {
+					let v = e_1.target.valueAsNumber;
 					update_skill(i_1, v);
 				}
 			})] }, i_1)), (0, import_jsx_runtime.jsxs)("div", {
@@ -28376,6 +28438,7 @@ function DisplayTeam() {
 			className: "mt-2",
 			xs: 2,
 			sm: 2,
+			md: 2,
 			children: [(0, import_jsx_runtime.jsx)(Col, {
 				xs: 6,
 				children: (0, import_jsx_runtime.jsxs)(Card_default, {
@@ -28410,6 +28473,7 @@ function DisplayTeam() {
 				})
 			}), (0, import_jsx_runtime.jsx)(Col, { children: (0, import_jsx_runtime.jsxs)(Stack, {
 				gap: 2,
+				className: "w-100",
 				children: [(0, import_jsx_runtime.jsxs)(Card_default, { children: [(0, import_jsx_runtime.jsx)(Card_default.Title, {
 					className: "p-2",
 					children: (0, import_jsx_runtime.jsx)(EditableText, {
@@ -28426,12 +28490,12 @@ function DisplayTeam() {
 				})] }), (0, import_jsx_runtime.jsx)(Card_default, { children: (0, import_jsx_runtime.jsxs)(Card_default.Body, {
 					className: "p-1",
 					style: { aspectRatio: "1/1" },
-					children: [[gk_skill, ...player_skill].map((s_6, i_3) => (0, import_jsx_runtime.jsxs)(Form_default.Group, { children: [(0, import_jsx_runtime.jsx)(FormLabel, { children: `${player_skill_names[i_3]} (${player_skill_names_long[i_3]})` }), (0, import_jsx_runtime.jsx)(FormRange, {
+					children: [[gk_skill, ...player_skill].map((s_5, i_3) => (0, import_jsx_runtime.jsxs)(Form_default.Group, { children: [(0, import_jsx_runtime.jsx)(FormLabel, { children: `${player_skill_names[i_3]} (${player_skill_names_long[i_3]})` }), (0, import_jsx_runtime.jsx)(FormRange, {
 						max: 15,
 						min: 0,
-						value: s_6,
-						onChange: (e_3) => {
-							let v_0 = e_3.target.valueAsNumber;
+						value: s_5,
+						onChange: (e_2) => {
+							let v_0 = e_2.target.valueAsNumber;
 							update_player_skill(i_3, v_0);
 						}
 					})] }, i_3)), (0, import_jsx_runtime.jsxs)("div", {
@@ -28452,7 +28516,7 @@ function DisplayTeam() {
 	});
 }
 function TeamEditor() {
-	const $ = (0, import_compiler_runtime.c)(29);
+	const $ = (0, import_compiler_runtime.c)(41);
 	const { loaded_zip, modified, current_team, show_image_editor } = (0, import_react.useContext)(EditorContext);
 	const dispatch = (0, import_react.useContext)(EditorDispatchContext);
 	let t0;
@@ -28473,6 +28537,7 @@ function TeamEditor() {
 		$[2] = t2;
 	} else t2 = $[2];
 	const [flag_imgs, set_flag_imgs] = (0, import_react.useState)(t2);
+	const [show_team_selector, set_show_team_selector] = (0, import_react.useState)(true);
 	let t3;
 	if ($[3] !== dispatch || $[4] !== flag_imgs || $[5] !== loaded_zip || $[6] !== modified || $[7] !== team_index) {
 		t3 = () => {
@@ -28502,45 +28567,107 @@ function TeamEditor() {
 		$[8] = t3;
 	} else t3 = $[8];
 	let t4;
-	if ($[9] !== team_index) {
-		t4 = [team_index];
-		$[9] = team_index;
-		$[10] = t4;
-	} else t4 = $[10];
+	if ($[9] !== modified || $[10] !== team_index) {
+		t4 = [team_index, modified];
+		$[9] = modified;
+		$[10] = team_index;
+		$[11] = t4;
+	} else t4 = $[11];
 	(0, import_react.useEffect)(t3, t4);
 	let t5;
-	if ($[11] === Symbol.for("react.memo_cache_sentinel")) {
+	if ($[12] === Symbol.for("react.memo_cache_sentinel")) {
 		t5 = { paddingBottom: "20rem" };
-		$[11] = t5;
-	} else t5 = $[11];
+		$[12] = t5;
+	} else t5 = $[12];
 	let t6;
-	if ($[12] !== current_team) {
+	if ($[13] !== current_team) {
 		t6 = current_team && (0, import_jsx_runtime.jsx)(DisplayTeam, {});
-		$[12] = current_team;
-		$[13] = t6;
-	} else t6 = $[13];
+		$[13] = current_team;
+		$[14] = t6;
+	} else t6 = $[14];
 	let t7;
-	if ($[14] === Symbol.for("react.memo_cache_sentinel")) {
+	if ($[15] === Symbol.for("react.memo_cache_sentinel")) {
 		t7 = {
 			bottom: 0,
 			left: 0,
 			paddingBottom: "2rem",
-			zIndex: "100",
-			borderTop: "1.5rem solid #0d6efd"
+			zIndex: "100"
 		};
-		$[14] = t7;
-	} else t7 = $[14];
+		$[15] = t7;
+	} else t7 = $[15];
 	let t8;
-	if ($[15] === Symbol.for("react.memo_cache_sentinel")) {
-		t8 = {
+	if ($[16] !== show_team_selector) {
+		t8 = () => set_show_team_selector(!show_team_selector);
+		$[16] = show_team_selector;
+		$[17] = t8;
+	} else t8 = $[17];
+	let t9;
+	if ($[18] === Symbol.for("react.memo_cache_sentinel")) {
+		t9 = (0, import_jsx_runtime.jsx)("div", {
+			className: "bg-white align-self-center",
+			style: {
+				marginBottom: "0.15rem",
+				width: "3.5rem",
+				height: "0.2rem",
+				borderRadius: "0.15rem"
+			}
+		});
+		$[18] = t9;
+	} else t9 = $[18];
+	let t10;
+	if ($[19] === Symbol.for("react.memo_cache_sentinel")) {
+		t10 = (0, import_jsx_runtime.jsx)("div", {
+			className: "bg-white align-self-center",
+			style: {
+				marginBottom: "0.15rem",
+				width: "3.25rem",
+				height: "0.2rem",
+				borderRadius: "0.15rem"
+			}
+		});
+		$[19] = t10;
+	} else t10 = $[19];
+	let t11;
+	if ($[20] === Symbol.for("react.memo_cache_sentinel")) {
+		t11 = (0, import_jsx_runtime.jsxs)(Stack, {
+			className: "align-self-center w-min",
+			children: [
+				t9,
+				t10,
+				(0, import_jsx_runtime.jsx)("div", {
+					className: "bg-white align-self-center",
+					style: {
+						width: "3rem",
+						height: "0.2rem",
+						borderRadius: "0.15rem"
+					}
+				})
+			]
+		});
+		$[20] = t11;
+	} else t11 = $[20];
+	let t12;
+	if ($[21] !== t8) {
+		t12 = (0, import_jsx_runtime.jsx)("div", {
+			className: "bg-primary py-1 mb-2 rounded-top",
+			onClick: t8,
+			children: t11
+		});
+		$[21] = t8;
+		$[22] = t12;
+	} else t12 = $[22];
+	const t13 = `${!show_team_selector && "d-none"}`;
+	let t14;
+	if ($[23] === Symbol.for("react.memo_cache_sentinel")) {
+		t14 = {
 			minHeight: "12rem",
 			paddingInline: "3rem"
 		};
-		$[15] = t8;
-	} else t8 = $[15];
-	let t9;
-	if ($[16] !== flag_imgs || $[17] !== leagues || $[18] !== set_team_index || $[19] !== team_index) {
-		t9 = leagues.map((l, i) => (0, import_jsx_runtime.jsx)(Carousel_default.Item, {
+		$[23] = t14;
+	} else t14 = $[23];
+	let t15;
+	if ($[24] !== flag_imgs || $[25] !== leagues || $[26] !== set_team_index || $[27] !== team_index) {
+		t15 = leagues.map((l, i) => (0, import_jsx_runtime.jsx)(Carousel_default.Item, {
 			className: "",
 			children: (0, import_jsx_runtime.jsx)(Container, {
 				style: {
@@ -28570,52 +28697,61 @@ function TeamEditor() {
 				})
 			})
 		}, i));
-		$[16] = flag_imgs;
-		$[17] = leagues;
-		$[18] = set_team_index;
-		$[19] = team_index;
-		$[20] = t9;
-	} else t9 = $[20];
-	let t10;
-	if ($[21] !== t9) {
-		t10 = (0, import_jsx_runtime.jsx)("div", {
-			className: "px-2 w-100 position-fixed bg-light pt-4 rounded-top",
-			style: t7,
-			children: (0, import_jsx_runtime.jsx)(Carousel_default, {
-				interval: 5e4,
-				slide: false,
-				style: t8,
-				indicators: false,
-				"data-bs-theme": "dark",
-				children: t9
-			})
+		$[24] = flag_imgs;
+		$[25] = leagues;
+		$[26] = set_team_index;
+		$[27] = team_index;
+		$[28] = t15;
+	} else t15 = $[28];
+	let t16;
+	if ($[29] !== t13 || $[30] !== t15) {
+		t16 = (0, import_jsx_runtime.jsx)(Carousel_default, {
+			className: t13,
+			interval: 5e4,
+			slide: false,
+			style: t14,
+			indicators: false,
+			"data-bs-theme": "dark",
+			children: t15
 		});
-		$[21] = t9;
-		$[22] = t10;
-	} else t10 = $[22];
-	let t11;
-	if ($[23] !== show_image_editor.show) {
-		t11 = show_image_editor.show && (0, import_jsx_runtime.jsx)(ModalImageEditor_default, {});
-		$[23] = show_image_editor.show;
-		$[24] = t11;
-	} else t11 = $[24];
-	let t12;
-	if ($[25] !== t10 || $[26] !== t11 || $[27] !== t6) {
-		t12 = (0, import_jsx_runtime.jsxs)("div", {
+		$[29] = t13;
+		$[30] = t15;
+		$[31] = t16;
+	} else t16 = $[31];
+	let t17;
+	if ($[32] !== t12 || $[33] !== t16) {
+		t17 = (0, import_jsx_runtime.jsxs)("div", {
+			className: "px-2 w-100 position-fixed bg-light",
+			style: t7,
+			children: [t12, t16]
+		});
+		$[32] = t12;
+		$[33] = t16;
+		$[34] = t17;
+	} else t17 = $[34];
+	let t18;
+	if ($[35] !== show_image_editor.show) {
+		t18 = show_image_editor.show && (0, import_jsx_runtime.jsx)(ModalImageEditor_default, {});
+		$[35] = show_image_editor.show;
+		$[36] = t18;
+	} else t18 = $[36];
+	let t19;
+	if ($[37] !== t17 || $[38] !== t18 || $[39] !== t6) {
+		t19 = (0, import_jsx_runtime.jsxs)("div", {
 			className: "pt-2",
 			style: t5,
 			children: [
 				t6,
-				t10,
-				t11
+				t17,
+				t18
 			]
 		});
-		$[25] = t10;
-		$[26] = t11;
-		$[27] = t6;
-		$[28] = t12;
-	} else t12 = $[28];
-	return t12;
+		$[37] = t17;
+		$[38] = t18;
+		$[39] = t6;
+		$[40] = t19;
+	} else t19 = $[40];
+	return t19;
 }
 function _temp2(p, c) {
 	return p + c;
@@ -33545,13 +33681,11 @@ async function repack_n(loaded_zip, modified) {
 			});
 		}
 	}
-	const buff_lg = await new Promise((r) => {
-		cv.toBlob((blob) => r(blob.arrayBuffer()), "image/jpeg", .5);
-	});
+	const img_data_lg = ctx.getImageData(0, 0, cv.width, cv.height);
+	const buff_lg = import_upng_js.default.encode([img_data_lg.data.buffer], img_data_lg.width, img_data_lg.height, 256);
 	n_mod.write_data(new Uint8Array(buff_lg));
-	const buff_sm = await new Promise((r) => {
-		cv_sm.toBlob((blob) => r(blob.arrayBuffer()), "image/jpeg", .5);
-	});
+	const img_data_sm = ctx_sm.getImageData(0, 0, cv_sm.width, cv_sm.height);
+	const buff_sm = import_upng_js.default.encode([img_data_sm.data.buffer], img_data_sm.width, img_data_sm.height, 256);
 	n_mod.write_data(new Uint8Array(buff_sm));
 	return [
 		n_mod.get_final_buffer(),
@@ -33737,9 +33871,11 @@ function ReorderTeamGroup_default() {
 //#endregion
 //#region src/App.jsx
 function App() {
-	const $ = (0, import_compiler_runtime.c)(39);
-	const { getByID } = useIndexedDBStore(STORE_NAME_IMAGES);
+	const $ = (0, import_compiler_runtime.c)(61);
+	const { getByID, deleteAll } = useIndexedDBStore(STORE_NAME_IMAGES);
+	const idb_data = useIndexedDBStore(STORE_NAME);
 	const { loaded_zip, modified, show_input_file, file_names } = (0, import_react.useContext)(EditorContext);
+	const dispatch = (0, import_react.useContext)(EditorDispatchContext);
 	const [show, set_show] = (0, import_react.useState)(false);
 	const [write_current_file_index, set_write_current_file_index] = (0, import_react.useState)(0);
 	const [show_progress_dialog, set_show_progress_dialog] = (0, import_react.useState)(false);
@@ -33871,17 +34007,35 @@ function App() {
 		$[13] = t3;
 	} else t3 = $[13];
 	const do_save_jar = t3;
+	const [show_alert, set_show_alert] = (0, import_react.useState)(false);
+	const [, set_show_success] = (0, import_react.useState)("");
+	const [show_about, set_show_about] = (0, import_react.useState)(false);
 	let t4;
-	if ($[14] === Symbol.for("react.memo_cache_sentinel")) {
-		t4 = {
+	if ($[14] !== deleteAll || $[15] !== dispatch || $[16] !== idb_data) {
+		t4 = async () => {
+			dispatch({ type: "clear_data" });
+			await deleteAll();
+			await idb_data.deleteAll();
+			set_show_alert(false);
+			set_show_success("Data cleared!");
+		};
+		$[14] = deleteAll;
+		$[15] = dispatch;
+		$[16] = idb_data;
+		$[17] = t4;
+	} else t4 = $[17];
+	const reset_data = t4;
+	let t5;
+	if ($[18] === Symbol.for("react.memo_cache_sentinel")) {
+		t5 = {
 			height: "100dvh",
 			overflowY: "scroll"
 		};
-		$[14] = t4;
-	} else t4 = $[14];
-	let t5;
-	if ($[15] === Symbol.for("react.memo_cache_sentinel")) {
-		t5 = (0, import_jsx_runtime.jsxs)(Navbar_default.Brand, {
+		$[18] = t5;
+	} else t5 = $[18];
+	let t6;
+	if ($[19] === Symbol.for("react.memo_cache_sentinel")) {
+		t6 = (0, import_jsx_runtime.jsxs)(Navbar_default.Brand, {
 			className: "text-white bold",
 			children: [(0, import_jsx_runtime.jsx)(Button, {
 				href: "/",
@@ -33893,86 +34047,86 @@ function App() {
 				children: "Pes Java Editor"
 			})]
 		});
-		$[15] = t5;
-	} else t5 = $[15];
-	let t6;
-	if ($[16] === Symbol.for("react.memo_cache_sentinel")) {
-		t6 = (0, import_jsx_runtime.jsx)(Navbar_default, {
+		$[19] = t6;
+	} else t6 = $[19];
+	let t7;
+	if ($[20] === Symbol.for("react.memo_cache_sentinel")) {
+		t7 = (0, import_jsx_runtime.jsx)(Navbar_default, {
 			className: "bg-primary",
 			expand: "lg",
-			children: (0, import_jsx_runtime.jsxs)(Container, { children: [t5, (0, import_jsx_runtime.jsx)(Navbar_default.Toggle, {
+			children: (0, import_jsx_runtime.jsxs)(Container, { children: [t6, (0, import_jsx_runtime.jsx)(Navbar_default.Toggle, {
 				onClick: () => set_show(true),
 				className: "text-dark bg-white",
 				"aria-controls": "basic-navbar-nav"
 			})] })
 		});
-		$[16] = t6;
-	} else t6 = $[16];
-	let t7;
-	if ($[17] === Symbol.for("react.memo_cache_sentinel")) {
-		t7 = (0, import_jsx_runtime.jsx)(Route, {
+		$[20] = t7;
+	} else t7 = $[20];
+	let t8;
+	if ($[21] === Symbol.for("react.memo_cache_sentinel")) {
+		t8 = (0, import_jsx_runtime.jsx)(Route, {
 			index: true,
 			path: "/",
 			element: (0, import_jsx_runtime.jsx)(Home_default, {})
 		});
-		$[17] = t7;
-	} else t7 = $[17];
-	let t8;
-	if ($[18] === Symbol.for("react.memo_cache_sentinel")) {
-		t8 = (0, import_jsx_runtime.jsx)(Route, {
+		$[21] = t8;
+	} else t8 = $[21];
+	let t9;
+	if ($[22] === Symbol.for("react.memo_cache_sentinel")) {
+		t9 = (0, import_jsx_runtime.jsx)(Route, {
 			path: "/TeamEditor",
 			element: (0, import_jsx_runtime.jsx)(TeamEditor, {})
 		});
-		$[18] = t8;
-	} else t8 = $[18];
-	let t9;
-	if ($[19] === Symbol.for("react.memo_cache_sentinel")) {
-		t9 = (0, import_jsx_runtime.jsx)(Route, {
+		$[22] = t9;
+	} else t9 = $[22];
+	let t10;
+	if ($[23] === Symbol.for("react.memo_cache_sentinel")) {
+		t10 = (0, import_jsx_runtime.jsx)(Route, {
 			path: "/StringEditor",
 			element: (0, import_jsx_runtime.jsx)(StringEditor_default, {})
 		});
-		$[19] = t9;
-	} else t9 = $[19];
-	let t10;
-	if ($[20] === Symbol.for("react.memo_cache_sentinel")) {
-		t10 = (0, import_jsx_runtime.jsx)(Route, {
+		$[23] = t10;
+	} else t10 = $[23];
+	let t11;
+	if ($[24] === Symbol.for("react.memo_cache_sentinel")) {
+		t11 = (0, import_jsx_runtime.jsx)(Route, {
 			path: "/Images",
 			element: (0, import_jsx_runtime.jsx)(PageImage, {})
 		});
-		$[20] = t10;
-	} else t10 = $[20];
-	let t11;
-	if ($[21] === Symbol.for("react.memo_cache_sentinel")) {
-		t11 = (0, import_jsx_runtime.jsx)(Route, {
+		$[24] = t11;
+	} else t11 = $[24];
+	let t12;
+	if ($[25] === Symbol.for("react.memo_cache_sentinel")) {
+		t12 = (0, import_jsx_runtime.jsx)(Route, {
 			index: true,
 			element: (0, import_jsx_runtime.jsx)(ReorderTeamGroupSelector, {})
 		});
-		$[21] = t11;
-	} else t11 = $[21];
-	let t12;
-	if ($[22] === Symbol.for("react.memo_cache_sentinel")) {
-		t12 = (0, import_jsx_runtime.jsx)(Container, {
+		$[25] = t12;
+	} else t12 = $[25];
+	let t13;
+	if ($[26] === Symbol.for("react.memo_cache_sentinel")) {
+		t13 = (0, import_jsx_runtime.jsx)(Container, {
 			className: "h-100 overflow-y-scroll",
 			fluid: true,
 			children: (0, import_jsx_runtime.jsx)(HashRouter, { children: (0, import_jsx_runtime.jsxs)(Routes, { children: [
-				t7,
 				t8,
 				t9,
 				t10,
+				t11,
 				(0, import_jsx_runtime.jsxs)(Route, {
 					path: "/ReorderTeamGroup",
-					children: [t11, (0, import_jsx_runtime.jsx)(Route, {
+					children: [t12, (0, import_jsx_runtime.jsx)(Route, {
 						path: ":group",
 						element: (0, import_jsx_runtime.jsx)(ReorderTeamGroup_default, {})
 					})]
 				})
 			] }) })
 		});
-		$[22] = t12;
-	} else t12 = $[22];
-	let t13;
-	if ($[23] !== do_save_jar || $[24] !== show) {
-		t13 = show && (0, import_jsx_runtime.jsx)(Offcanvas_default, {
+		$[26] = t13;
+	} else t13 = $[26];
+	let t14;
+	if ($[27] !== do_save_jar || $[28] !== show) {
+		t14 = show && (0, import_jsx_runtime.jsx)(Offcanvas_default, {
 			show,
 			onHide: () => set_show(false),
 			placement: "bottom",
@@ -33986,76 +34140,177 @@ function App() {
 					}),
 					(0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline-secondary",
-						children: "Reset"
+						onClick: () => set_show_alert(true),
+						children: "Clear Data"
 					}),
 					(0, import_jsx_runtime.jsx)(Button, {
 						variant: "outline-secondary",
+						onClick: () => set_show_about(true),
 						children: "About"
 					})
 				]
 			}) })
 		});
-		$[23] = do_save_jar;
-		$[24] = show;
-		$[25] = t13;
-	} else t13 = $[25];
-	let t14;
-	if ($[26] === Symbol.for("react.memo_cache_sentinel")) {
-		t14 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
+		$[27] = do_save_jar;
+		$[28] = show;
+		$[29] = t14;
+	} else t14 = $[29];
+	let t15;
+	if ($[30] === Symbol.for("react.memo_cache_sentinel")) {
+		t15 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
 			className: "text-center",
 			children: "Building jar"
 		});
-		$[26] = t14;
-	} else t14 = $[26];
-	const t15 = `${Math.floor(progress_now * 100 / (file_names.length - 1))}%`;
-	const t16 = Math.floor(progress_now * 100 / (file_names.length - 1));
-	let t17;
-	if ($[27] !== t15 || $[28] !== t16) {
-		t17 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsx)(ProgressBar, {
+		$[30] = t15;
+	} else t15 = $[30];
+	const t16 = `${Math.floor(progress_now * 100 / (file_names.length - 1))}%`;
+	const t17 = Math.floor(progress_now * 100 / (file_names.length - 1));
+	let t18;
+	if ($[31] !== t16 || $[32] !== t17) {
+		t18 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsx)(ProgressBar, {
 			striped: true,
 			variant: "primary",
-			label: t15,
-			now: t16
+			label: t16,
+			now: t17
 		}) });
-		$[27] = t15;
-		$[28] = t16;
-		$[29] = t17;
-	} else t17 = $[29];
-	let t18;
-	if ($[30] !== show_progress_dialog || $[31] !== t17) {
-		t18 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+		$[31] = t16;
+		$[32] = t17;
+		$[33] = t18;
+	} else t18 = $[33];
+	let t19;
+	if ($[34] !== show_progress_dialog || $[35] !== t18) {
+		t19 = (0, import_jsx_runtime.jsxs)(Modal_default, {
 			centered: true,
 			show: show_progress_dialog,
-			children: [t14, t17]
+			children: [t15, t18]
 		});
-		$[30] = show_progress_dialog;
-		$[31] = t17;
-		$[32] = t18;
-	} else t18 = $[32];
-	let t19;
-	if ($[33] !== show_input_file.show) {
-		t19 = show_input_file.show && (0, import_jsx_runtime.jsx)(ModalInputFile_default, {});
-		$[33] = show_input_file.show;
-		$[34] = t19;
-	} else t19 = $[34];
+		$[34] = show_progress_dialog;
+		$[35] = t18;
+		$[36] = t19;
+	} else t19 = $[36];
 	let t20;
-	if ($[35] !== t13 || $[36] !== t18 || $[37] !== t19) {
-		t20 = (0, import_jsx_runtime.jsxs)("div", {
-			style: t4,
-			children: [
-				t6,
-				t12,
-				t13,
-				t18,
-				t19
-			]
-		});
-		$[35] = t13;
-		$[36] = t18;
-		$[37] = t19;
+	if ($[37] !== show_input_file.show) {
+		t20 = show_input_file.show && (0, import_jsx_runtime.jsx)(ModalInputFile_default, {});
+		$[37] = show_input_file.show;
 		$[38] = t20;
 	} else t20 = $[38];
-	return t20;
+	let t21;
+	if ($[39] === Symbol.for("react.memo_cache_sentinel")) {
+		t21 = () => set_show_alert(false);
+		$[39] = t21;
+	} else t21 = $[39];
+	let t22;
+	if ($[40] === Symbol.for("react.memo_cache_sentinel")) {
+		t22 = (0, import_jsx_runtime.jsx)(Modal_default.Body, { children: (0, import_jsx_runtime.jsxs)(Alert_default, {
+			variant: "danger",
+			children: [
+				(0, import_jsx_runtime.jsx)(Alert_default.Heading, { children: "Confirm Reset" }),
+				(0, import_jsx_runtime.jsx)("hr", {}),
+				(0, import_jsx_runtime.jsx)("p", { children: "This will remove all modified data!" })
+			]
+		}) });
+		$[40] = t22;
+	} else t22 = $[40];
+	let t23;
+	if ($[41] !== reset_data) {
+		t23 = (0, import_jsx_runtime.jsx)(Button, {
+			variant: "danger",
+			onClick: reset_data,
+			children: "Confirm"
+		});
+		$[41] = reset_data;
+		$[42] = t23;
+	} else t23 = $[42];
+	let t24;
+	if ($[43] === Symbol.for("react.memo_cache_sentinel")) {
+		t24 = (0, import_jsx_runtime.jsx)(Button, {
+			onClick: () => set_show_alert(false),
+			children: "Cancel"
+		});
+		$[43] = t24;
+	} else t24 = $[43];
+	let t25;
+	if ($[44] !== t23) {
+		t25 = (0, import_jsx_runtime.jsxs)(Modal_default.Footer, { children: [t23, t24] });
+		$[44] = t23;
+		$[45] = t25;
+	} else t25 = $[45];
+	let t26;
+	if ($[46] !== show_alert || $[47] !== t25) {
+		t26 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+			centered: true,
+			show: show_alert,
+			onHide: t21,
+			children: [t22, t25]
+		});
+		$[46] = show_alert;
+		$[47] = t25;
+		$[48] = t26;
+	} else t26 = $[48];
+	let t27;
+	let t28;
+	if ($[49] === Symbol.for("react.memo_cache_sentinel")) {
+		t27 = () => set_show_about(false);
+		t28 = (0, import_jsx_runtime.jsx)(Modal_default.Title, {
+			className: "text-center",
+			children: "About"
+		});
+		$[49] = t27;
+		$[50] = t28;
+	} else {
+		t27 = $[49];
+		t28 = $[50];
+	}
+	let t29;
+	if ($[51] === Symbol.for("react.memo_cache_sentinel")) {
+		t29 = (0, import_jsx_runtime.jsxs)(Modal_default.Body, { children: [(0, import_jsx_runtime.jsx)("hr", {}), (0, import_jsx_runtime.jsx)("p", { children: "Tool to modify PES 2011 Java (J2ME) Teams, Players, Skills, Images (few currently) for 320x240 screen size." })] });
+		$[51] = t29;
+	} else t29 = $[51];
+	let t30;
+	if ($[52] === Symbol.for("react.memo_cache_sentinel")) {
+		t30 = (0, import_jsx_runtime.jsx)(Modal_default.Footer, { children: (0, import_jsx_runtime.jsx)(Button, {
+			onClick: () => set_show_about(false),
+			children: "Close"
+		}) });
+		$[52] = t30;
+	} else t30 = $[52];
+	let t31;
+	if ($[53] !== show_about) {
+		t31 = (0, import_jsx_runtime.jsxs)(Modal_default, {
+			centered: true,
+			show: show_about,
+			onHide: t27,
+			children: [
+				t28,
+				t29,
+				t30
+			]
+		});
+		$[53] = show_about;
+		$[54] = t31;
+	} else t31 = $[54];
+	let t32;
+	if ($[55] !== t14 || $[56] !== t19 || $[57] !== t20 || $[58] !== t26 || $[59] !== t31) {
+		t32 = (0, import_jsx_runtime.jsxs)("div", {
+			style: t5,
+			children: [
+				t7,
+				t13,
+				t14,
+				t19,
+				t20,
+				t26,
+				t31
+			]
+		});
+		$[55] = t14;
+		$[56] = t19;
+		$[57] = t20;
+		$[58] = t26;
+		$[59] = t31;
+		$[60] = t32;
+	} else t32 = $[60];
+	return t32;
 }
 
 //#endregion
